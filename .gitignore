@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+toy-compiler
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+build/
+install_manifest.txt
+
+# clangd
+compile_commands.json
+.cache/
