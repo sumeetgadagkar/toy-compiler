@@ -41,7 +41,9 @@ enum Token : int {
 
   tok_plus = -7,
   tok_minus = -8,
-  tok_mul = -9
+  tok_mul = -9,
+
+  tok_sof = -10,
 };
 
 class AbstractLexer {
