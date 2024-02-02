@@ -40,6 +40,9 @@ CTestTestfile.cmake
 Makefile
 build/
 install_manifest.txt
+bin/
+lib/
+_deps/
 
 # clangd
 compile_commands.json

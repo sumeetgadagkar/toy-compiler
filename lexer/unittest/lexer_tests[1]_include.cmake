@@ -1,0 +1,5 @@
+if(EXISTS "/home/sumeet/Documents/projects/toy-compiler/lexer/unittest/lexer_tests[1]_tests.cmake")
+  include("/home/sumeet/Documents/projects/toy-compiler/lexer/unittest/lexer_tests[1]_tests.cmake")
+else()
+  add_test(lexer_tests_NOT_BUILT lexer_tests_NOT_BUILT)
+endif()
