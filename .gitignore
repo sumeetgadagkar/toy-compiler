@@ -31,6 +31,7 @@
 *.out
 *.app
 toy-compiler
+lexer-tests
 
 # CMake
 CMakeFiles/
@@ -43,6 +44,7 @@ install_manifest.txt
 bin/
 lib/
 _deps/
+**/*.cmake
 
 # clangd
 compile_commands.json
