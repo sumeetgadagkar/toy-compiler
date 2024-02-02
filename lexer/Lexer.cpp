@@ -8,6 +8,7 @@ namespace toy::lexer {
 
 Lexer::Lexer(const std::string &aFileName) : fCurrToken(Token::tok_sof) {
   fFileName = std::make_shared<std::string>(std::move(aFileName));
+  fCurrLocation.file = fFileName;
   // read file contents
   std::ifstream code_file(aFileName);
   if (!code_file.is_open()) {
@@ -20,6 +21,7 @@ Lexer::Lexer(const std::string &aFileName) : fCurrToken(Token::tok_sof) {
 
 Lexer::Lexer(std::stringstream aStrStream) : fCurrToken(Token::tok_sof) {
   fFileName = std::make_shared<std::string>("buffer");
+  fCurrLocation.file = fFileName;
   fStream << aStrStream.rdbuf();
   getNextLine();
 }
@@ -28,15 +30,91 @@ Lexer::Lexer(std::stringstream aStrStream) : fCurrToken(Token::tok_sof) {
 Token Lexer::getCurrentToken() { return fCurrToken; }
 
 // move to the next token in the stream and return it
-Token Lexer::getNextToken() { return Token::tok_number; }
+Token Lexer::getNextToken() { return fCurrToken = getToken(); }
 
 // return the literal for the current token
-std::string Lexer::getLiteral() { return "Hello"; }
+std::string Lexer::getLiteral() {
+  std::string literal = fCurrLiteral;
+  fCurrLiteral = "";
+  return literal;
+}
 
 // return the start location of the current token
 Location Lexer::getCurrentLocation() {
   auto loc = Location();
   return loc;
+}
+
+Token Lexer::getToken() {
+  // skip whitespace
+  while (isspace(fCurrChar)) {
+    fCurrChar = getNextChar();
+  }
+
+  // get the location of the current token start
+  fCurrLocation.line = fCurrLine;
+  fCurrLocation.col = fCurrCol;
+
+  // check for identifier [a-zA-Z][a-zA-Z0-9_]*
+  if (std::isalpha(fCurrChar)) {
+    fCurrLiteral += (char)fCurrChar;
+
+    while (std::isalnum(fCurrChar = getNextChar()) || fCurrChar == '_') {
+      fCurrLiteral += (char)fCurrChar;
+    }
+
+    if (fCurrLiteral == "return") {
+      return Token::tok_return;
+    }
+
+    if (fCurrLiteral == "def") {
+      return Token::tok_def;
+    }
+
+    if (fCurrLiteral == "var") {
+      return Token::tok_var;
+    }
+
+    return Token::tok_identifier;
+  }
+
+  // check for number [0-9.]+
+  if (std::isdigit(fCurrChar) || fCurrChar == '.') {
+    fCurrLiteral += (char)fCurrChar;
+
+    while (std::isdigit(fCurrChar = getNextChar()) || fCurrChar == '.') {
+      fCurrLiteral += (char)fCurrChar;
+    }
+
+    return Token::tok_number;
+  }
+
+  // check for comment #
+  if (fCurrChar == '#') {
+    // comment lasts until end of line
+    while ((fCurrChar = getNextChar()) != EOF && fCurrChar != '\n' &&
+           fCurrChar != '\r') {
+      // do nothing
+    }
+
+    // if not EOF, do over
+    if (fCurrChar != EOF) {
+      return getToken();
+    }
+  }
+
+  // check for EOF
+  if (fCurrChar == EOF) {
+    return Token::tok_eof;
+  }
+
+  // otherwite just return the char
+  Token ch = Token(fCurrChar);
+
+  // update for next call
+  fCurrChar = getNextChar();
+
+  return ch;
 }
 
 void Lexer::getNextLine() {
@@ -60,7 +138,6 @@ int Lexer::getNextChar() {
   if (fLineStream.eof()) {
     getNextLine();
   }
-
   return nextChar;
 }
 

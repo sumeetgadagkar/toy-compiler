@@ -57,5 +57,11 @@ private:
   int fCurrLine = 0;
   // current col
   int fCurrCol = 0;
+  // current character, initialized to whitespace
+  int fCurrChar = ' ';
+  // current token location
+  Location fCurrLocation;
+  // current literal string
+  std::string fCurrLiteral = "";
 };
 }; // namespace toy::lexer
