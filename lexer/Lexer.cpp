@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 
+
 namespace toy::lexer {
 
 Lexer::Lexer(const std::string &aFileName) : fCurrToken(Token::tok_sof) {
