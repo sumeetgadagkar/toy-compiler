@@ -7,12 +7,13 @@ cmake_policy(SET CMP0135 NEW)
 
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(toy-compiler)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+enable_testing()
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 add_executable(toy-compiler main.cpp)
 
