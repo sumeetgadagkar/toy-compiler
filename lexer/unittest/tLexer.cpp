@@ -1,7 +1,11 @@
 #include "lexer/include/Lexer.hpp"
 #include <gtest/gtest.h>
 
-namespace {}
+#include <vector>
+
+namespace {
+
+}
 
 TEST(Lexer, Test1) {
 
@@ -14,9 +18,5 @@ TEST(Lexer, Test1) {
 
   toy::lexer::Lexer lex(std::move(code));
   std::cout << lex.getNextToken() << " : " << lex.getLiteral() << std::endl;
-
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
+  
 }
