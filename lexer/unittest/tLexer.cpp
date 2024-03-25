@@ -31,11 +31,12 @@ namespace {
 
 TEST(Lexer, Test1) {
 
-  std::stringstream code(R"(def main() {
-  var a = [1, 2, 3];
-  print(a);
-}
-)");
+  std::stringstream code(R"(
+    def main() {
+      var a = [1, 2, 3];
+      print(a);
+    }
+  )");
 
   Lexer lex(std::move(code));
 
