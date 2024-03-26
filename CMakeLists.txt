@@ -12,8 +12,8 @@ set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-    add_compile_options(-O0 -Og)  # Add -O0 flag for Debug build
-    message("${CMAKE_BUILD_TYPE}")
+    add_compile_options(-O0 -gfull)
+    add_definitions(-D_GLIBCXX_DEBUG=1)
 endif()
 
 project(toy-compiler)

@@ -47,8 +47,8 @@ Location Lexer::getCurrentLocation() {
 }
 
 Token Lexer::getToken() {
-  // skip whitespace
-  while (isspace(fCurrChar)) {
+  // skip whitespace and end of lines
+  while (isspace(fCurrChar) || ((fCurrChar == EOF) && !fStream.eof())) {
     fCurrChar = getNextChar();
   }
 
@@ -65,15 +65,27 @@ Token Lexer::getToken() {
     }
 
     if (fCurrLiteral == "return") {
+      // reset literal
+      fCurrLiteral = "";
       return Token::tok_return;
     }
 
     if (fCurrLiteral == "def") {
+      // reset literal
+      fCurrLiteral = "";
       return Token::tok_def;
     }
 
     if (fCurrLiteral == "var") {
+      // reset literal
+      fCurrLiteral = "";
       return Token::tok_var;
+    }
+
+    if (fCurrLiteral == "print") {
+      // reset literal
+      fCurrLiteral = "";
+      return Token::tok_print;
     }
 
     return Token::tok_identifier;
@@ -115,14 +127,18 @@ Token Lexer::getToken() {
   // update for next call
   fCurrChar = getNextChar();
 
+  // reset literal
+  fCurrLiteral = "";
+
   return ch;
 }
 
 void Lexer::getNextLine() {
-  if (!fStream.str().empty()) {
+  if (!fStream.eof()) {
     ++fCurrLine;
     std::string line;
     std::getline(fStream, line);
+    fLineStream.clear();
     fLineStream << line;
   } else {
     fLineStream << "";

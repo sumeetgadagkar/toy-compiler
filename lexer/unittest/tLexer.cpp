@@ -1,48 +1,51 @@
 #include "lexer/include/Lexer.hpp"
+#include "LexerTestHelper.hpp"
 #include <gtest/gtest.h>
 
 using namespace toy::lexer;
 
-namespace {
-  // uitlity function to concert Token to corresponding string
-  std::string tokToString(Token& tok) {
-    switch (tok) {
-      case Token::tok_semicolon : return "tok_semicolon"; 
-      case Token::tok_paran_open : return "tok_paran_open";
-      case Token::tok_paren_close : return "tok_paren_close";
-      case Token::tok_bracket_open : return "tok_bracket_open";
-      case Token::tok_bracket_clone : return "tok_bracket_clone";
-      case Token::tok_sbracket_open : return "tok_sbracket_open";
-      case Token::tok_sbracket_close : return "tok_sbracket_close";
-      case Token::tok_eof : return "tok_eof";
-      case Token::tok_return : return "tok_return";
-      case Token::tok_var : return "tok_var";
-      case Token::tok_def : return "tok_def";
-      case Token::tok_identifier : return "tok_identifier";
-      case Token::tok_number : return "tok_number";
-      case Token::tok_plus : return "tok_plus";
-      case Token::tok_minus : return "tok_minus";
-      case Token::tok_mul : return "tok_mul";
-      case Token::tok_sof : return "tok_sof";
-      default: return "";
-    }
-  }
-}
-
 TEST(Lexer, Test1) {
 
   std::stringstream code(R"(
+    
     def main() {
       var a = [1, 2, 3];
       print(a);
-    }
+    } 
+    
   )");
 
+  std::vector<TokType> expected_toks = {
+    Token::tok_def,
+    TokWithLieral{Token::tok_identifier, "main"},
+    Token::tok_paren_open,
+    Token::tok_paren_close,
+    Token::tok_bracket_open,
+    Token::tok_var,
+    TokWithLieral{Token::tok_identifier, "a"},
+    Token::tok_equals,
+    Token::tok_sbracket_open,
+    TokWithLieral{Token::tok_number, "1"},
+    Token::tok_comma,
+    TokWithLieral{Token::tok_number, "2"},
+    Token::tok_comma,
+    TokWithLieral{Token::tok_number, "3"},
+    Token::tok_sbracket_close,
+    Token::tok_semicolon,
+    Token::tok_print,
+    Token::tok_paren_open,
+    TokWithLieral{Token::tok_identifier, "a"},
+    Token::tok_paren_close,
+    Token::tok_semicolon,
+    Token::tok_bracket_close
+  };
+
+  // prime the lexer
   Lexer lex(std::move(code));
 
-  Token tok;
+  // get actual tokens from the lexer
+  std::vector<TokType> actual_toks = getToksFromLexer(lex);
 
-  while ((tok = lex.getNextToken()) != Token::tok_eof) {
-    std::cout << tokToString(tok) << std::endl;
-  }
+  // check if equal
+  EXPECT_TRUE(areToksEqual(actual_toks, expected_toks));
 }

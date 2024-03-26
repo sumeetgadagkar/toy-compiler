@@ -23,27 +23,26 @@ struct Location {
 // list of tokens that the lexer can return
 enum Token : int {
   tok_semicolon = ';',
-  tok_paran_open = '(',
+  tok_paren_open = '(',
   tok_paren_close = ')',
   tok_bracket_open = '{',
-  tok_bracket_clone = '}',
+  tok_bracket_close = '}',
   tok_sbracket_open = '[',
   tok_sbracket_close = ']',
+  tok_plus = '+',
+  tok_minus = '-',
+  tok_mul = '*',
+  tok_equals = '=',
+  tok_comma = ',',
 
   tok_eof = -1,
-
   tok_return = -2,
   tok_var = -3,
   tok_def = -4,
-
   tok_identifier = -5,
   tok_number = -6,
-
-  tok_plus = -7,
-  tok_minus = -8,
-  tok_mul = -9,
-
-  tok_sof = -10,
+  tok_sof = -7,
+  tok_print = -8,
 };
 
 class AbstractLexer {
