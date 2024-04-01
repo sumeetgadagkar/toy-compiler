@@ -2,26 +2,19 @@
 
 #include "lexer/include/Lexer.hpp"
 
-#include <variant>
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 using namespace toy::lexer;
 
-struct TokWithLieral {
-  Token tok;
-  std::string literal;
-};
-
-using TokType = std::variant<Token, TokWithLieral>;
-
 // uitlity function to get the underlying string from a stream
-inline std::string getStringFromStream(std::stringstream& ss) {
+__attribute__((used)) inline std::string getStringFromStream(std::stringstream& ss) {
     return ss.str();
 }
 
 // uitlity function to concert Token to corresponding string
-inline std::string tokToString(Token& tok) {
+inline std::string tokToString(const Token& tok) {
   switch (tok) {
     case Token::tok_semicolon : return "tok_semicolon"; 
     case Token::tok_paren_open : return "tok_paren_open";
@@ -97,4 +90,17 @@ inline bool areToksEqual (const std::vector<TokType>& v1, const std::vector<TokT
   }
 
   return true;
+}
+
+// utility to print a vector of tokens
+__attribute__((used)) inline void printTokens (const std::vector<TokType>& toks) {
+  for (size_t i = 0; i < toks.size(); i++) {
+    if (std::holds_alternative<Token>(toks[i])) {
+      std::cout << tokToString(std::get<Token>(toks[i])) << std::endl;
+    }
+    else {
+      auto tok = std::get<TokWithLieral>(toks[i]);
+      std::cout << tokToString(tok.tok) << " : " << tok.literal << std::endl;
+    }
+  }
 }

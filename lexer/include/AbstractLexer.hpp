@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 namespace toy::lexer {
 
@@ -43,7 +44,15 @@ enum Token : int {
   tok_number = -6,
   tok_sof = -7,
   tok_print = -8,
+  tok_transpose = -9,
 };
+
+struct TokWithLieral {
+  Token tok;
+  std::string literal;
+};
+
+using TokType = std::variant<Token, TokWithLieral>;
 
 class AbstractLexer {
 public:

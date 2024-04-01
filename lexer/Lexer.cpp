@@ -88,6 +88,12 @@ Token Lexer::getToken() {
       return Token::tok_print;
     }
 
+    if (fCurrLiteral == "transpose") {
+      // reset literal
+      fCurrLiteral = "";
+      return Token::tok_transpose;
+    }
+
     return Token::tok_identifier;
   }
 
@@ -105,15 +111,15 @@ Token Lexer::getToken() {
   // check for comment #
   if (fCurrChar == '#') {
     // comment lasts until end of line
-    while ((fCurrChar = getNextChar()) != EOF && fCurrChar != '\n' &&
-           fCurrChar != '\r') {
+    auto currLine = fCurrLine;
+    while (((fCurrChar = getNextChar()) != EOF) && !fStream.eof() && !fLineStream.eof() && (currLine == fCurrLine)) {
       // do nothing
     }
 
-    // if not EOF, do over
-    if (fCurrChar != EOF) {
+    // do over
+    // if (fCurrChar != EOF) {
       return getToken();
-    }
+    // }
   }
 
   // check for EOF
@@ -139,6 +145,7 @@ void Lexer::getNextLine() {
     std::string line;
     std::getline(fStream, line);
     fLineStream.clear();
+    fLineStream.str("");
     fLineStream << line;
   } else {
     fLineStream << "";
