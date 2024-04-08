@@ -1,6 +1,6 @@
 /*
  *
- * This is a abstract lexer for the toy language. I have done this mainly to
+ * This is an abstract lexer for the toy language. I have done this mainly to
  * have an interface to program the parser against, while making changes to the
  * lexer
  *
@@ -73,4 +73,4 @@ public:
 
 inline AbstractLexer::~AbstractLexer() = default;
 
-}; // namespace toy::lexer
+} // namespace toy::lexer

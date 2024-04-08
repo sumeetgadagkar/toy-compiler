@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-
 namespace toy::lexer {
 
 Lexer::Lexer(const std::string &aFileName) : fCurrToken(Token::tok_sof) {
@@ -112,13 +111,14 @@ Token Lexer::getToken() {
   if (fCurrChar == '#') {
     // comment lasts until end of line
     auto currLine = fCurrLine;
-    while (((fCurrChar = getNextChar()) != EOF) && !fStream.eof() && !fLineStream.eof() && (currLine == fCurrLine)) {
+    while (((fCurrChar = getNextChar()) != EOF) && !fStream.eof() &&
+           !fLineStream.eof() && (currLine == fCurrLine)) {
       // do nothing
     }
 
     // do over
     // if (fCurrChar != EOF) {
-      return getToken();
+    return getToken();
     // }
   }
 
