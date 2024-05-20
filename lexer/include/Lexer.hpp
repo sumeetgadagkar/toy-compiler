@@ -35,6 +35,8 @@ public:
   // return the start location of the current token
   Location getCurrentLocation() override;
 
+  void consume(Token aTok) override;
+
   ~Lexer() override;
 
 private:

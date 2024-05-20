@@ -69,6 +69,10 @@ public:
 
   // return the start location of the current token
   virtual Location getCurrentLocation() = 0;
+
+  // assert if current toekn does not match the passed token
+  // if matches, move to next token
+  virtual void consume(Token aTok) = 0;
 };
 
 inline AbstractLexer::~AbstractLexer() = default;

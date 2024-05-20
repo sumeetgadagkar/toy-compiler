@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <cassert>
 
 namespace toy::lexer {
 
@@ -43,6 +44,11 @@ std::string Lexer::getLiteral() {
 Location Lexer::getCurrentLocation() {
   auto loc = Location();
   return loc;
+}
+
+void Lexer::consume(Token aTok) {
+  assert(aTok == fCurrToken && "consume Token mismatch");
+  getNextToken();
 }
 
 Token Lexer::getToken() {

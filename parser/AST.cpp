@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <string>
+#include <cassert>
 
 namespace toy {
   
@@ -35,11 +36,13 @@ namespace toy {
       void dump(Prototype *aPrototype);
       void dump(Function *aFunction);
       void dump(ExprList *aExprList);
-      void dump(Shape *aShape);
+      void dump(const Shape& aShape);
       // generic Expr printer, dipatches to correct method w.r.t subclass
       void dump(Expr *aExpr);
       // function to print out current indentation level
       void indent();
+      // literal / num print helper
+      void printLitHelper(Expr *aLiteralOrNumExpr);
 
       int fCurrIndent = 0;
       std::ostringstream fOss;
@@ -108,9 +111,129 @@ namespace toy {
     fOss << "// Block" << std::endl;
   }
 
-  void ASTDumper::dump(LiteralExpr *aLiteralExpr) {
-    INDENT();
+  void ASTDumper::printLitHelper(Expr *aLiteralOrNumExpr) {
+    // check if number or another literal
+    if (auto *numExpr = dynamic_cast<NumberExpr*>(aLiteralOrNumExpr)) {
+      // number
+      fOss << numExpr->getValue();
+      return;
+    }
 
+    // literal
+    auto *litExpr = dynamic_cast<LiteralExpr*>(aLiteralOrNumExpr);
+    assert(litExpr != nullptr);
+
+    // print dims
+    fOss << "<";
+    auto &dims = litExpr->getDims();
+    for (auto &dim : dims) {
+      fOss << dim << ",";
+    }
+    fOss << ">";
+
+    // print contents
+    fOss << "[";
+    for (const auto& expr : litExpr->getValues()) {
+      printLitHelper(expr.get());
+      fOss << ",";
+    }
+    fOss << "]";
   }
 
+  void ASTDumper::dump(LiteralExpr *aLiteralExpr) {
+    INDENT();
+    fOss << "Literal: ";
+    printLitHelper(aLiteralExpr);
+    fOss << " " << getLocStr(aLiteralExpr) << std::endl;
+  }
+
+  void ASTDumper::dump(VarExpr *aVarExpr) {
+    INDENT();
+    fOss << "Var: " << aVarExpr->getName() << " " << getLocStr(aVarExpr) << std::endl;
+  }
+
+  void ASTDumper::dump(VarDeclExpr *aVarDeclExpr) {
+    INDENT();
+    fOss << "VarDecl: " << aVarDeclExpr->getName(); 
+    dump(aVarDeclExpr->getShape());
+    fOss << " " << getLocStr(aVarDeclExpr) << std::endl;
+    dump(aVarDeclExpr->getInitValue());
+  }
+
+  void ASTDumper::dump(ReturnExpr *aReturnExpr) {
+    INDENT();
+    fOss << "Return" << std::endl;
+    if (aReturnExpr->getExpr().has_value()) {
+      return dump(*aReturnExpr->getExpr());
+    }
+    {
+      INDENT();
+      fOss << "(void)" << std::endl;
+    }
+  }
+
+  void ASTDumper::dump(BinaryExpr *aBinaryExpr) {
+    INDENT();
+    fOss << "BinOp: " << aBinaryExpr->getOp() << " " << getLocStr(aBinaryExpr) << std::endl;
+    dump(aBinaryExpr->getLHS());
+    dump(aBinaryExpr->getRHS());
+  }
+
+  void ASTDumper::dump(CallExpr *aCallExpr) {
+    INDENT();
+    fOss << "Call '" << aCallExpr->getCallee() << "' [ " << getLocStr(aCallExpr) << std::endl;
+    for (auto &arg : aCallExpr->getArgs()) {
+      dump(arg.get());
+      fOss << ",";
+    }
+    indent();
+    fOss << "]" << std::endl;
+  }
+
+  void ASTDumper::dump(PrintExpr *aPrintExpr) {
+    INDENT();
+    fOss << "Print [ " << getLocStr(aPrintExpr) << std::endl;
+    dump(aPrintExpr->getArg());
+    indent();
+    fOss << "]" << std::endl;
+  }
+
+  void ASTDumper::dump(const Shape& aShape) {
+    fOss << "<";
+    for (auto &dim : aShape) {
+      fOss << dim << ",";
+    }
+    fOss << ">";
+  }
+
+  void ASTDumper::dump(Prototype *aPrototype) {
+    INDENT();
+    fOss << "Proto '" << aPrototype->getName() << "' " << getLocStr(aPrototype) << std::endl;
+    indent();
+    fOss << "Params: [";
+    for (auto &arg : aPrototype->getArgs()) {
+      fOss << arg->getName() << ",";
+    }
+    fOss << "]" << std::endl;
+  }
+
+  void ASTDumper::dump(Function *aFunction) {
+    INDENT();
+    fOss << "Function " << std::endl;
+    dump(aFunction->getPrototype());
+    dump(aFunction->getBody());  
+  }
+
+  void ASTDumper::dump(Module *aModule) {
+    INDENT();
+    fOss << "Module: " << std::endl;
+    for (auto &func : *aModule) {
+      dump(func.get());
+    }
+  }
+
+  void dump(Module &aModule) {
+    ASTDumper().dump(&aModule);
+  }
+ 
 } // namespace toy

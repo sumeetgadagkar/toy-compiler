@@ -114,7 +114,8 @@ public:
 
 private:
   char fOp;
-  std::unique_ptr<Expr> fLHS, fRHS;
+  std::unique_ptr<Expr> fLHS;
+  std::unique_ptr<Expr> fRHS;
 };
 
 class CallExpr : public Expr {
@@ -144,23 +145,23 @@ private:
 
 class Prototype : public Expr {
 public:
-  Prototype(const std::string &aName, ExprList args, lexer::Location aLoc)
+  Prototype(const std::string &aName, std::vector<std::unique_ptr<VarExpr>> args, lexer::Location aLoc)
       : Expr(std::move(aLoc)), fName(aName), fArgs(std::move(args)) {}
 
-  const std::string &getCallee() { return fName; }
+  const std::string &getName() { return fName; }
 
-  const ExprList &getArgs() { return fArgs; }
+  const std::vector<std::unique_ptr<VarExpr>> &getArgs() { return fArgs; }
 
 private:
   std::string fName;
-  ExprList fArgs;
+  std::vector<std::unique_ptr<VarExpr>> fArgs;
 };
 
-class Function : public Expr {
+class Function {
 public:
   Function(std::unique_ptr<Prototype> aPrototype,
-           std::unique_ptr<ExprList> aBody, lexer::Location aLoc)
-      : Expr(std::move(aLoc)), fProto(std::move(aPrototype)),
+           std::unique_ptr<ExprList> aBody)
+      : fProto(std::move(aPrototype)),
         fBody(std::move(aBody)) {}
 
   Prototype *getPrototype() { return fProto.get(); }
