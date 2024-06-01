@@ -27,6 +27,9 @@ private:
 
 using ExprList = std::vector<std::unique_ptr<Expr>>;
 using Shape = std::vector<int>;
+struct VarType {
+  Shape shape;
+};
 
 class NumberExpr : public Expr {
 public:
@@ -41,7 +44,7 @@ private:
 
 class LiteralExpr : public Expr {
 public:
-  LiteralExpr(ExprList vals, std::vector<int> &dims, lexer::Location aLoc)
+  LiteralExpr(ExprList vals,const std::vector<int> &dims, lexer::Location aLoc)
       : Expr(std::move(aLoc)), fVals(std::move(vals)), fDims(std::move(dims)) {}
 
   const ExprList &getValues() { return fVals; }
@@ -66,26 +69,26 @@ private:
 
 class VarDeclExpr : public Expr {
 public:
-  VarDeclExpr(const std::string &aName, const Shape &aShape,
+  VarDeclExpr(const std::string &aName, VarType aType,
               std::unique_ptr<Expr> aInitVal, lexer::Location aLoc)
-      : Expr(std::move(aLoc)), fName(aName), fShape(aShape),
+      : Expr(std::move(aLoc)), fName(aName), fType(aType),
         fInitVal(std::move(aInitVal)) {}
 
   const std::string &getName() { return fName; }
 
-  const Shape &getShape() { return fShape; }
+  const VarType &getType() { return fType; }
 
   Expr *getInitValue() { return fInitVal.get(); }
 
 private:
   std::string fName;
-  Shape fShape;
+  VarType fType;
   std::unique_ptr<Expr> fInitVal;
 };
 
 class ReturnExpr : public Expr {
 public:
-  ReturnExpr(std::unique_ptr<Expr> aExpr, lexer::Location aLoc)
+  ReturnExpr(std::optional<std::unique_ptr<Expr>> aExpr, lexer::Location aLoc)
       : Expr(std::move(aLoc)), fExpr(std::move(aExpr)) {}
 
   std::optional<Expr *> getExpr() {

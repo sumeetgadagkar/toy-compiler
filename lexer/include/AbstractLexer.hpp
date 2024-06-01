@@ -35,6 +35,8 @@ enum Token : int {
   tok_mul = '*',
   tok_equals = '=',
   tok_comma = ',',
+  tok_shape_open = '<',
+  tok_shape_close = '>',
 
   tok_eof = -1,
   tok_return = -2,

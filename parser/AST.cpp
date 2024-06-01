@@ -36,7 +36,7 @@ namespace toy {
       void dump(Prototype *aPrototype);
       void dump(Function *aFunction);
       void dump(ExprList *aExprList);
-      void dump(const Shape& aShape);
+      void dump(const VarType& aType);
       // generic Expr printer, dipatches to correct method w.r.t subclass
       void dump(Expr *aExpr);
       // function to print out current indentation level
@@ -155,7 +155,7 @@ namespace toy {
   void ASTDumper::dump(VarDeclExpr *aVarDeclExpr) {
     INDENT();
     fOss << "VarDecl: " << aVarDeclExpr->getName(); 
-    dump(aVarDeclExpr->getShape());
+    dump(aVarDeclExpr->getType());
     fOss << " " << getLocStr(aVarDeclExpr) << std::endl;
     dump(aVarDeclExpr->getInitValue());
   }
@@ -198,9 +198,9 @@ namespace toy {
     fOss << "]" << std::endl;
   }
 
-  void ASTDumper::dump(const Shape& aShape) {
+  void ASTDumper::dump(const VarType& aType) {
     fOss << "<";
-    for (auto &dim : aShape) {
+    for (auto &dim : aType.shape) {
       fOss << dim << ",";
     }
     fOss << ">";
