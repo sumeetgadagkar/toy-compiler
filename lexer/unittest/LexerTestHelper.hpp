@@ -57,6 +57,10 @@ inline std::string tokToString(const Token &tok) {
     return "tok_comma";
   case Token::tok_print:
     return "tok_print";
+  case Token::tok_shape_open:
+    return "tok_shape_open";
+  case Token::tok_shape_close:
+    return "tok_shape_close";
   default:
     return "";
   }

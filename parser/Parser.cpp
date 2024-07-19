@@ -359,7 +359,7 @@ namespace toy::parser {
 
   // parenexpr ::= '(' expression ')'
   std::unique_ptr<Expr> Parser::parseParenExpr() {
-    fLexer->consume(lexer::tok_paren_open); // eat (.
+    fLexer->consume(lexer::tok_paren_open);
     auto v = parseExpression();
     if (!v)
       return nullptr;
@@ -394,19 +394,20 @@ namespace toy::parser {
       }
 
       // End of this list on ']'
-      if (fLexer->getCurrentToken() == ']')
+      if (fLexer->getCurrentToken() == lexer::tok_sbracket_close)
         break;
 
       // Elements are separated by a comma.
-      if (fLexer->getCurrentToken() != ',')
+      if (fLexer->getCurrentToken() != lexer::tok_comma)
         return parseError<Expr>("] or ,", "in literal expression");
 
-      fLexer->getNextToken(); // eat ,
+      fLexer->consume(lexer::tok_comma);
     } while (true);
 
     if (values.empty())
       return parseError<Expr>("<something>", "to fill literal expression");
-    fLexer->getNextToken(); // eat ]
+
+    fLexer->consume(lexer::tok_sbracket_close);
 
     // Fill in the dimensions now. First the current nesting level:
     dims.push_back(values.size());
@@ -447,7 +448,7 @@ namespace toy::parser {
         }
       }
     }
-    
+
     return std::make_unique<LiteralExpr>(std::move(values), std::move(dims), std::move(loc));
   }
 
